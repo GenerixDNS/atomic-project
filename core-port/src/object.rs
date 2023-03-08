@@ -1,11 +1,10 @@
-use std::sync::Arc;
 use std::thread;
-use std::thread::{JoinHandle, Thread};
+use std::thread::JoinHandle;
 use std::time::Duration;
 use jni::JNIEnv;
-use jni::objects::{GlobalRef, JMethodID, JObject};
+use jni::objects::{JMethodID, JObject};
 use jni::signature::ReturnType;
-use jni::sys::{_jobject, jint, jlong, jobject};
+use jni::sys::{_jobject, jint, jlong};
 
 pub static mut STORAGE: Option<Vec<FuturePromise>> = None;
 

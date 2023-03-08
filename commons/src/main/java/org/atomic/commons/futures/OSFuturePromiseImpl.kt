@@ -1,3 +1,5 @@
+@file:Suppress("ReplaceCallWithBinaryOperator", "DuplicatedCode")
+
 package org.atomic.commons.futures
 
 import java.lang.NullPointerException
@@ -10,14 +12,14 @@ class OSFuturePromiseImpl<T : Any>(private var futureDelay: Int) : FuturePromise
     private lateinit var runnable: FutureAction<T>
     private var condition = FutureCondition.NOT_STARTED
     private var storage : Optional<T> = Optional.empty()
+    private var handler: Optional<FutureHandlerList<T>> = Optional.empty();
 
     private external fun e(handle: Long, d: Int, runnable: PrimitiveRunnable<T>)
     private external fun d(handle: Long, runnable: PrimitiveRunnable<T>)
     private external fun c(handle: Long) : Short
     private external fun j(handle: Long) : T
     private external fun s()
-    private external fun k()
-    private external fun g()
+    private external fun a(runnable: Runnable)
 
     internal external fun n(handle: Long) : String
     internal external fun i(handle: Long) : Int
@@ -44,22 +46,50 @@ class OSFuturePromiseImpl<T : Any>(private var futureDelay: Int) : FuturePromise
 
     override fun runtime(): FutureRuntime = FutureRuntime.SIMPLE_OS
 
+    override fun enableHandler(): FuturePromise<T> {
+        this.handler = Optional.of(SimpleFutureHandlerList(this))
+        return this
+    }
+
+    override fun handler(): FutureHandlerList<T> = this.handler.get()
+
+    private fun t() {
+        this.handler.get().forEach { item ->
+            if (item.first.equals(Event.ON_ASYNC_FINISH) || item.first.equals(Event.ON_FINISH))
+                item.second.accept(this)
+        }
+    }
+
     override fun execute(): FuturePromise<T> {
         if (this.condition != FutureCondition.FLUSHED) {
             if (this.futureDelay == 0) {
                 this.condition = FutureCondition.PREPARING
+                if (this.handler.isPresent)
+                    this.handler.get().forEach { item ->
+                        if (item.first.equals(Event.ON_BOOT))
+                            item.second.accept(this)
+                    }
                 this.d(this.handle(), object : PrimitiveRunnable<T> {
                     override fun run(): T {
-                        return runnable.run(SimpleFutureChannelContext(SimpleThreadInformation(handle, promise()), true))
+                        return if (!handler.isPresent)
+                            runnable.run(SimpleFutureChannelContext(SimpleThreadInformation(handle, promise()), true))
+                        else runnable.then({ t() } ,SimpleFutureChannelContext(SimpleThreadInformation(handle, promise()), true))
                     }
                 })
                 return this
             } else {
                 if (this.futureDelay > 0) {
                     this.condition = FutureCondition.PREPARING
+                    if (this.handler.isPresent)
+                        this.handler.get().forEach { item ->
+                            if (item.first.equals(Event.ON_BOOT))
+                                item.second.accept(this)
+                        }
                     this.e(this.handle(), this.futureDelay, object : PrimitiveRunnable<T> {
                         override fun run(): T {
-                            return runnable.run(SimpleFutureChannelContext(SimpleThreadInformation(handle, promise()), true))
+                            return if (!handler.isPresent)
+                                runnable.run(SimpleFutureChannelContext(SimpleThreadInformation(handle, promise()), true))
+                            else runnable.then({ t() } ,SimpleFutureChannelContext(SimpleThreadInformation(handle, promise()), true))
                         }
                     })
                     return this
@@ -83,6 +113,11 @@ class OSFuturePromiseImpl<T : Any>(private var futureDelay: Int) : FuturePromise
     override fun getNow(): FuturePromise<T> {
         this.condition = FutureCondition.RUNNING_SYNC
         if (this.futureDelay == 0) {
+            if (this.handler.isPresent)
+                this.handler.get().forEach { item ->
+                    if (item.first.equals(Event.ON_BOOT))
+                        item.second.accept(this)
+                }
             this.storage = Optional.of(
                     this.runnable.run(
                             SimpleFutureChannelContext(
@@ -92,9 +127,19 @@ class OSFuturePromiseImpl<T : Any>(private var futureDelay: Int) : FuturePromise
                     )
             )
             this.condition = FutureCondition.FINISHED
+            if (this.handler.isPresent)
+                this.handler.get().forEach { item ->
+                    if (item.first.equals(Event.ON_SYNC_FINISH) || item.first.equals(Event.ON_FINISH))
+                        item.second.accept(this)
+                }
             return this
         }
         if (this.futureDelay > 0) {
+            if (this.handler.isPresent)
+                this.handler.get().forEach { item ->
+                    if (item.first.equals(Event.ON_BOOT))
+                        item.second.accept(this)
+                }
             Thread.sleep(this.futureDelay.toLong())
             this.storage = Optional.of(
                     this.runnable.run(
@@ -105,13 +150,18 @@ class OSFuturePromiseImpl<T : Any>(private var futureDelay: Int) : FuturePromise
                     )
             )
             this.condition = FutureCondition.FINISHED
+            if (this.handler.isPresent)
+                this.handler.get().forEach { item ->
+                    if (item.first.equals(Event.ON_SYNC_FINISH) || item.first.equals(Event.ON_FINISH))
+                        item.second.accept(this)
+                }
             return this
         } else throw UnsupportedOperationException("it is not possible to execute a task with a negative delay value!")
     }
 
     override fun shutdown() {
         if (this.condition == FutureCondition.RUNNING) {
-
+            TODO("Not yet implemented")
         }
     }
 

@@ -28,4 +28,8 @@ interface FuturePromise<T> {
 
     public fun runtime() : FutureRuntime
 
+    public fun enableHandler() : FuturePromise<T>
+
+    public fun handler() : FutureHandlerList<T>
+
 }
