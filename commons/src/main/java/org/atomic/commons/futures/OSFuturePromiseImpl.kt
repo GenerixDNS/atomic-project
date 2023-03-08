@@ -16,6 +16,8 @@ class OSFuturePromiseImpl<T : Any>(private var futureDelay: Int) : FuturePromise
     private external fun c(handle: Long) : Short
     private external fun j(handle: Long) : T
     private external fun s()
+    private external fun k()
+    private external fun g()
 
     internal external fun n(handle: Long) : String
     internal external fun i(handle: Long) : Int
@@ -43,31 +45,35 @@ class OSFuturePromiseImpl<T : Any>(private var futureDelay: Int) : FuturePromise
     override fun runtime(): FutureRuntime = FutureRuntime.SIMPLE_OS
 
     override fun execute(): FuturePromise<T> {
-        if (this.futureDelay == 0) {
-            this.condition = FutureCondition.PREPARING
-            this.d(this.handle(), object : PrimitiveRunnable<T> {
-                override fun run(): T {
-                    return runnable.run(SimpleFutureChannelContext(SimpleThreadInformation(handle, promise()), true))
-                }
-            })
-            return this
-        } else {
-            if (this.futureDelay > 0) {
+        if (this.condition != FutureCondition.FLUSHED) {
+            if (this.futureDelay == 0) {
                 this.condition = FutureCondition.PREPARING
-                this.e(this.handle(), this.futureDelay, object : PrimitiveRunnable<T> {
+                this.d(this.handle(), object : PrimitiveRunnable<T> {
                     override fun run(): T {
                         return runnable.run(SimpleFutureChannelContext(SimpleThreadInformation(handle, promise()), true))
                     }
                 })
                 return this
+            } else {
+                if (this.futureDelay > 0) {
+                    this.condition = FutureCondition.PREPARING
+                    this.e(this.handle(), this.futureDelay, object : PrimitiveRunnable<T> {
+                        override fun run(): T {
+                            return runnable.run(SimpleFutureChannelContext(SimpleThreadInformation(handle, promise()), true))
+                        }
+                    })
+                    return this
+                }
+                throw UnsupportedOperationException("it is not possible to execute a task with a negative delay value!")
             }
-            throw UnsupportedOperationException("it is not possible to execute a task with a negative delay value!")
         }
+        return this
     }
 
     override fun join(): FuturePromise<T> {
         if (this.condition() == FutureCondition.RUNNING || this.condition() == FutureCondition.FINISHED) {
             this.storage = Optional.of(this.j(this.handle))
+            this.condition = FutureCondition.FLUSHED
         }
         return this
     }
