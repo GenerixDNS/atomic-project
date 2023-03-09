@@ -9,7 +9,7 @@ import java.util.Optional
 class OSFuturePromiseImpl<T : Any>(private var futureDelay: Int) : IFuturePromise<T> {
 
     private val handle = IFutureFactory.getFutureFactory().allocate()
-    private lateinit var runnable: FutureAction<T>
+    private lateinit var runnable: FutureTask<T>
     private var condition = FutureCondition.NOT_STARTED
     private var storage : Optional<T> = Optional.empty()
     private var handler: Optional<IFutureHandlerList<T>> = Optional.empty();
@@ -190,7 +190,7 @@ class OSFuturePromiseImpl<T : Any>(private var futureDelay: Int) : IFuturePromis
         TODO("Not yet implemented")
     }
 
-    override fun action(runnable: FutureAction<T>) : IFuturePromise<T> {
+    override fun action(runnable: FutureTask<T>) : IFuturePromise<T> {
         this.runnable = runnable
         return this
     }

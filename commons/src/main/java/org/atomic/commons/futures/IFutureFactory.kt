@@ -19,6 +19,6 @@ interface IFutureFactory {
 
     public fun <T: Any> from() : IFuturePromise<T>
 
-    public fun <T: Any> execute(action: FutureAction<T>) : IFuturePromise<T>
+    public fun <T: Any> execute(action: FutureTask<T>) : IFuturePromise<T>
 
 }

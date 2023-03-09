@@ -1,6 +1,6 @@
 package org.atomic.commons.futures;
 
-public interface FutureAction<T> {
+public interface FutureTask<T> {
 
     public T run(IFutureChannelContext<T> fcc);
 

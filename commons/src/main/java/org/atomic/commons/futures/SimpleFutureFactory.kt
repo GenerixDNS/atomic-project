@@ -30,7 +30,7 @@ class SimpleFutureFactory : IFutureFactory {
 
     override fun <T: Any> from(): IFuturePromise<T> = OSFuturePromiseImpl(0)
 
-    override fun <T: Any> execute(action: FutureAction<T>): IFuturePromise<T> = from<T>().action(action).execute()
+    override fun <T: Any> execute(action: FutureTask<T>): IFuturePromise<T> = from<T>().action(action).execute()
 
 
 }

@@ -27,7 +27,7 @@ interface IFuturePromise<T> : IHandle {
 
     public fun condition() : FutureCondition
 
-    public fun action(runnable: FutureAction<T>) : IFuturePromise<T>
+    public fun action(runnable: FutureTask<T>) : IFuturePromise<T>
 
     public fun reboot()
 
