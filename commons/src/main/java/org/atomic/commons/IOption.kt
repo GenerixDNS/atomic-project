@@ -1,6 +1,6 @@
 package org.atomic.commons
 
-interface Option {
+interface IOption {
 
     public fun name()
 

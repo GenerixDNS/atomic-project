@@ -1,6 +1,6 @@
 package org.atomic.commons.futures
 
-class SimpleThreadInformation<T>(private val handle: Long, private val future: FuturePromise<T>) : ThreadInformation<T> {
+class SimpleThreadInformation<T>(private val handle: Long, private val future: IFuturePromise<T>) : IThreadInformation<T> {
 
     override fun name(): String {
         return if (this.handle.toInt() != 0) {
@@ -14,6 +14,6 @@ class SimpleThreadInformation<T>(private val handle: Long, private val future: F
         } else Thread.currentThread().id
     }
 
-    override fun future(): FuturePromise<T> = this.future
+    override fun future(): IFuturePromise<T> = this.future
 
 }

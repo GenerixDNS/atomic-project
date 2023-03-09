@@ -3,13 +3,13 @@ package org.atomic.commons.futures
 import java.util.function.Consumer
 import kotlin.collections.ArrayList
 
-class SimpleFutureHandlerList<T>(private val future: FuturePromise<T>) : FutureHandlerList<T> {
+class SimpleFutureHandlerList<T>(private val future: IFuturePromise<T>) : IFutureHandlerList<T> {
 
-    private val handlerList: ArrayList<Pair<Event, Consumer<FuturePromise<T>>>> = ArrayList()
+    private val handlerList: ArrayList<Pair<FutureEvent, Consumer<IFuturePromise<T>>>> = ArrayList()
 
-    override fun future(): FuturePromise<T> = this.future
+    override fun future(): IFuturePromise<T> = this.future
 
-    override fun on(event: Event, consumer: Consumer<FuturePromise<T>>): FutureHandlerList<T> {
+    override fun on(event: FutureEvent, consumer: Consumer<IFuturePromise<T>>): IFutureHandlerList<T> {
         handlerList.add(Pair(event, consumer))
         return this
     }
@@ -18,7 +18,7 @@ class SimpleFutureHandlerList<T>(private val future: FuturePromise<T>) : FutureH
 
     override fun flush() = this.handlerList.clear()
 
-    override fun iterator(): Iterator<Pair<Event, Consumer<FuturePromise<T>>>> {
+    override fun iterator(): Iterator<Pair<FutureEvent, Consumer<IFuturePromise<T>>>> {
         return this.handlerList.iterator()
     }
 

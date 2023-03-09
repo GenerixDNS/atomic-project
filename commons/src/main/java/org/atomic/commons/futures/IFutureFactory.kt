@@ -1,6 +1,6 @@
 package org.atomic.commons.futures
 
-interface FutureFactory {
+interface IFutureFactory {
 
     companion object {
 
@@ -15,10 +15,10 @@ interface FutureFactory {
 
     public fun allocate() : Long
 
-    public fun <T: Any> from(runtime: FutureRuntime) : FuturePromise<T>
+    public fun <T: Any> from(runtime: FutureRuntime) : IFuturePromise<T>
 
-    public fun <T: Any> from() : FuturePromise<T>
+    public fun <T: Any> from() : IFuturePromise<T>
 
-    public fun <T: Any> execute(action: FutureAction<T>) : FuturePromise<T>
+    public fun <T: Any> execute(action: FutureAction<T>) : IFuturePromise<T>
 
 }

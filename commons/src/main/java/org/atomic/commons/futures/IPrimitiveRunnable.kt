@@ -1,6 +1,6 @@
 package org.atomic.commons.futures
 
-interface PrimitiveRunnable<T> {
+interface IPrimitiveRunnable<T> {
 
     public fun run() : T
 

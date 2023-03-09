@@ -2,7 +2,7 @@ package org.atomic.commons.futures
 
 import java.util.Random
 
-class SimpleFutureFactory : FutureFactory {
+class SimpleFutureFactory : IFutureFactory {
 
     companion object {
         private val generator = Random()
@@ -21,16 +21,16 @@ class SimpleFutureFactory : FutureFactory {
         return r
     }
 
-    override fun <T : Any> from(runtime: FutureRuntime): FuturePromise<T> {
+    override fun <T : Any> from(runtime: FutureRuntime): IFuturePromise<T> {
         if (runtime == FutureRuntime.SIMPLE_OS) {
             return OSFuturePromiseImpl(0)
         }
         TODO("Not yet implemented")
     }
 
-    override fun <T: Any> from(): FuturePromise<T> = OSFuturePromiseImpl(0)
+    override fun <T: Any> from(): IFuturePromise<T> = OSFuturePromiseImpl(0)
 
-    override fun <T: Any> execute(action: FutureAction<T>): FuturePromise<T> = from<T>().action(action).execute()
+    override fun <T: Any> execute(action: FutureAction<T>): IFuturePromise<T> = from<T>().action(action).execute()
 
 
 }
