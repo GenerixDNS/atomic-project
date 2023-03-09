@@ -11,9 +11,9 @@ class Bootstrap {
 
     fun loadLibraries() {
         if (!loaded) {
-            if (operatingSystemMXBean.name.equals("windows", ignoreCase = true)) {
+            if (operatingSystemMXBean.name.contains("windows", ignoreCase = true)) {
                 for (item in libraries) {
-                    Runtime.getRuntime().load(path(item, ".dll").absolutePath)
+                    Runtime.getRuntime().load(path(item, "dll").absolutePath)
                 }
                 loaded = true
             } else {

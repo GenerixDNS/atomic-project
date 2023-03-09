@@ -12,13 +12,13 @@ pub mod object;
 
 #[no_mangle]
 pub extern "system" fn Java_org_atomic_commons_futures_OSFuturePromiseImpl_d(env: JNIEnv, _: JObject, handle: jlong, runnable: JObject) {
-    let run_method_id: JMethodID = env.get_method_id("org/atomic/commons/futures/PrimitiveRunnable", "run", "()Ljava/lang/Object;").unwrap();
+    let run_method_id: JMethodID = env.get_method_id("org/atomic/commons/futures/IPrimitiveRunnable", "run", "()Ljava/lang/Object;").unwrap();
     object::FuturePromise::execute_d(env, handle, runnable, run_method_id)
 }
 
 #[no_mangle]
 pub extern "system" fn Java_org_atomic_commons_futures_OSFuturePromiseImpl_e(env: JNIEnv, _: JObject, handle: jlong, d: jint, runnable: JObject) {
-    let run_method_id: JMethodID = env.get_method_id("org/atomic/commons/futures/PrimitiveRunnable", "run", "()Ljava/lang/Object;").unwrap();
+    let run_method_id: JMethodID = env.get_method_id("org/atomic/commons/futures/IPrimitiveRunnable", "run", "()Ljava/lang/Object;").unwrap();
     object::FuturePromise::execute_e(env, handle, runnable, run_method_id, d)
 }
 
